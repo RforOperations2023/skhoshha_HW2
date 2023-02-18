@@ -1,0 +1,13 @@
+name: PittDashboard
+title: PittDashboard
+username:
+account: skhoshha
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 8349678
+bundleId: 6860693
+url: https://skhoshha.shinyapps.io/PittDashboard/
+when: 1676709830.6602
+lastSyncTime: 1676709830.6602
+asMultiple: FALSE
+asStatic: FALSE
