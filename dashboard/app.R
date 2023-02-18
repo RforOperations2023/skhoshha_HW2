@@ -4,6 +4,7 @@ library(reshape2)
 library(dplyr)
 library(plotly)
 library(shinythemes)
+library(forcats)
 
 
 # Load the dataset and cleaning
@@ -41,11 +42,11 @@ sidebar <- dashboardSidebar(
     
     # Input: Select Sector ----------------------------------------------
     selectInput("Sect", "Sector",
-                    choices = sort(unique(data$Sector)),
+                    choices = c("1", "2", "3", "4", "5", "6", "7", "8",
+                                "9", "10", "11", "12", "13", "14", "15", "16"),
                     multiple = TRUE,
                     selectize = TRUE,
-                    selected = c("1", "2", "3", "4", "5", "6", "7", "8",
-                                 "9", "10", "11", "12", "13", "14", "15", "16"))
+                    selected = '')
   )
 )
 
@@ -58,7 +59,7 @@ body <- dashboardBody(tabItems(
           # Input and Value Boxes ----------------------------------------------
           fluidRow(
             infoBoxOutput("PopChange89"),
-            valueBoxOutput("PopChange90"),
+            infoBoxOutput("PopChange90"),
             infoBoxOutput("PopChange01")
           ),
           
@@ -75,7 +76,8 @@ body <- dashboardBody(tabItems(
   # Data Table Page ----------------------------------------------
   tabItem("table",
           fluidPage(
-            box(title = "Selected Pittsburgh Population Data", DT::dataTableOutput("table"), width = 12))
+            box(title = "Selected Pittsburgh Population Data", DT::dataTableOutput("table"), 
+                width = 12))
   )
 )
 )
@@ -105,35 +107,31 @@ server <- function(input, output) {
     return(data)
   })
   
-  # Reactive melted data ----------------------------------------------
-  # mwInput <- reactive({
-  #   swInput() %>%
-  #     melt(id = "Neighborhood")
-  # })
-  
   # A plot showing land size and population size -----------------------------
   output$plot_land <- renderPlotly({
-    dat <- subset(data_subset() ) #, variable == "land")
-    
-    # Generate Plot ----------------------------------------------
+    dat <- subset(data_subset() )
     ggplot(data = dat, aes(x = Area, y = Pop_2010, color = Neighborhood)) +
+      labs(y= "Population Size (2010)", x = "Land Area (acres)") +
            geom_point()
   })
   
-  # A plot showing the height of characters -----------------------------------
+  # A plot showing the percent of White vs African American residents ----------
   output$plot_race <- renderPlotly({
-    dat <- subset(data_subset() )#,  variable == "race")
+    dat <- subset(data_subset() )
     ggplot(data = dat, aes(x = Perc_White, y = Perc_African_American, 
                            color = Neighborhood)) +
+      labs(y= "Percent of African American Residents", x = "Percent of White Residents") +
              geom_point()
   })
   
-  # A plot showing the height of characters -----------------------------------
+  # A plot showing the Age Distribution -----------------------------------
   output$plot_age <- renderPlotly({
-    dat <- subset(data_subset() )#,  variable == "age")
-    ggplot(data = dat, aes(x = Perc_Pop_Age_20.34, y = Perc_Pop_Age.60.74, 
-                           color = Neighborhood)) +
-      geom_point()
+    dat <- subset(data_subset() )
+    ggplot(data = dat, aes(x = fct_reorder(Neighborhood, Perc_Pop_Age_20.34), 
+                           y = Perc_Pop_Age_20.34, fill = Neighborhood)) +
+      labs(y= "Percent of Residents Age 20-34", x = "Neighborhood") +
+      theme(axis.text.x = element_text(angle=50)) +
+      geom_bar(stat = "identity")
   })
   
   # Data table of characters ----------------------------------------------
@@ -150,18 +148,21 @@ server <- function(input, output) {
     new <- data_subset()
     num <- round(mean(new$Perc_Pop_Change_80.90, na.rm = T), 2)
     
-    infoBox("Average Percent Population Change 1980-1990", value = num, 
-            subtitle = paste(nrow(new), "characters"), 
+    infoBox("Year 1980-1990", value = num, 
+            subtitle = paste("Average Percent Population Change 1980-1990: ",
+                             nrow(new), "characters"), 
             icon = icon("balance-scale"), color = "red")
   })
   
   # PopChange90 value box ----------------------------------------------
-  output$PopChange90 <- renderValueBox({
+  output$PopChange90 <- renderInfoBox({
     new <- data_subset()
     num <- round(mean(new$Perc_Pop_Change_90.00, na.rm = T), 2)
     
-    valueBox(subtitle = "Average Percent Population Change 1990-2000", 
-             value = num, icon = icon("sort-numeric-asc"), color = "green")
+    infoBox("Year 1990-2000", 
+            subtitle = paste("Average Percent Population Change 1990-2000: ",
+                             nrow(new), "characters"),
+            value = num, icon = icon("sort-numeric-asc"), color = "green")
   })
   
   # PopChange01 info box ----------------------------------------------
@@ -169,10 +170,12 @@ server <- function(input, output) {
     new <- data_subset()
     num <- round(mean(new$Perc_Pop_Change_00.10, na.rm = T), 2)
     
-    infoBox("Average Percent Population Change 2000-2010", value = num, 
-            subtitle = paste(nrow(new), "characters"), 
+    infoBox("Year 2000-2010", value = num, 
+            subtitle = paste("Average Percent Population Change 2000-2010: ",
+                             nrow(new), "characters"), 
             icon = icon("balance-scale"), color = "purple")
   })
+  
 }
 
 # Run the application ----------------------------------------------
