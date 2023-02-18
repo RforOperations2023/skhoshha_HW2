@@ -16,13 +16,16 @@ colnames(data)[1] = "Neighborhood"
 pdf(NULL)
 
 # Application header & title ----------------------------------------------
-header <- dashboardHeader(title = "Pittsburgh Neighborhood Housing Data"
+header <- dashboardHeader(title = "Pittsburgh"
 )
 
 # Dashboard Sidebar ----------------------------------------------
 sidebar <- dashboardSidebar(
   sidebarMenu(
     id = "tabs",
+    
+    #Introduction to the Dashboard -------------------------------
+    h6("Pittsburgh Neighborhoods Demographics"),
     
     # Menu Items ----------------------------------------------
     menuItem("Plot", icon = icon("bar-chart"), tabName = "plot"),
@@ -154,7 +157,7 @@ server <- function(input, output) {
     
     infoBox("Year 1980-1990", value = avg, 
             subtitle = paste("Average Percent Population Change 1980-1990: ",
-                             nrow(new), "characters"), 
+                             nrow(new), "neighborhoods included"), 
             icon = icon("percent"), color = "red")
   })
   
@@ -165,7 +168,7 @@ server <- function(input, output) {
     
     infoBox("Year 1990-2000", 
             subtitle = paste("Average Percent Population Change 1990-2000: ",
-                             nrow(new), "characters"),
+                             nrow(new), "neighborhoods included"),
             value = avg, icon = icon("person"), color = "green")
   })
   
@@ -176,7 +179,7 @@ server <- function(input, output) {
     
     infoBox("Year 2000-2010", value = avg, 
             subtitle = paste("Average Percent Population Change 2000-2010: ",
-                             nrow(new), "characters"), 
+                             nrow(new), "neighborhoods included"), 
             icon = icon("stats", lib = "glyphicon"), color = "purple")
   })
   
