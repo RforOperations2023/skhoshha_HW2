@@ -84,7 +84,6 @@ body <- dashboardBody(tabItems(
 
 ui <- dashboardPage(header, sidebar, body)
 
-# Define server function required to create plots and value boxes -----
 server <- function(input, output) {
   
   # Reactive data function -------------------------------------------
@@ -111,7 +110,8 @@ server <- function(input, output) {
   output$plot_land <- renderPlotly({
     dat <- subset(data_subset() )
     ggplot(data = dat, aes(x = Area, y = Pop_2010, color = Neighborhood)) +
-      labs(y= "Population Size (2010)", x = "Land Area (acres)") +
+      labs(y= "Population Size (2010)", x = "Land Area (acres)",
+           title = "Are Land Size and Population Size Correlated?") +
            geom_point()
   })
   
@@ -120,7 +120,10 @@ server <- function(input, output) {
     dat <- subset(data_subset() )
     ggplot(data = dat, aes(x = Perc_White, y = Perc_African_American, 
                            color = Neighborhood)) +
-      labs(y= "Percent of African American Residents", x = "Percent of White Residents") +
+      labs(y= "Percent of African American Residents", 
+           x = "Percent of White Residents",
+           title = 
+             "What is the Racial Distribution of Black and White Residents in Each Neighborhood?") +
              geom_point()
   })
   
@@ -129,7 +132,8 @@ server <- function(input, output) {
     dat <- subset(data_subset() )
     ggplot(data = dat, aes(x = fct_reorder(Neighborhood, Perc_Pop_Age_20.34), 
                            y = Perc_Pop_Age_20.34, fill = Neighborhood)) +
-      labs(y= "Percent of Residents Age 20-34", x = "Neighborhood") +
+      labs(y= "Percent of Residents Age 20-34", x = "Neighborhood", title = 
+             "How Young is the Population in Each Neighborhood?") +
       theme(axis.text.x = element_text(angle=50)) +
       geom_bar(stat = "identity")
   })
@@ -146,34 +150,34 @@ server <- function(input, output) {
   # PopChange89 info box ----------------------------------------------
   output$PopChange89 <- renderInfoBox({
     new <- data_subset()
-    num <- round(mean(new$Perc_Pop_Change_80.90, na.rm = T), 2)
+    avg <- round(mean(new$Perc_Pop_Change_80.90, na.rm = T), 2)
     
-    infoBox("Year 1980-1990", value = num, 
+    infoBox("Year 1980-1990", value = avg, 
             subtitle = paste("Average Percent Population Change 1980-1990: ",
                              nrow(new), "characters"), 
-            icon = icon("balance-scale"), color = "red")
+            icon = icon("percent"), color = "red")
   })
   
   # PopChange90 value box ----------------------------------------------
   output$PopChange90 <- renderInfoBox({
     new <- data_subset()
-    num <- round(mean(new$Perc_Pop_Change_90.00, na.rm = T), 2)
+    avg <- round(mean(new$Perc_Pop_Change_90.00, na.rm = T), 2)
     
     infoBox("Year 1990-2000", 
             subtitle = paste("Average Percent Population Change 1990-2000: ",
                              nrow(new), "characters"),
-            value = num, icon = icon("sort-numeric-asc"), color = "green")
+            value = avg, icon = icon("person"), color = "green")
   })
   
   # PopChange01 info box ----------------------------------------------
   output$PopChange01 <- renderInfoBox({
     new <- data_subset()
-    num <- round(mean(new$Perc_Pop_Change_00.10, na.rm = T), 2)
+    avg <- round(mean(new$Perc_Pop_Change_00.10, na.rm = T), 2)
     
-    infoBox("Year 2000-2010", value = num, 
+    infoBox("Year 2000-2010", value = avg, 
             subtitle = paste("Average Percent Population Change 2000-2010: ",
                              nrow(new), "characters"), 
-            icon = icon("balance-scale"), color = "purple")
+            icon = icon("stats", lib = "glyphicon"), color = "purple")
   })
   
 }
